@@ -5,9 +5,12 @@ import Navbar from './components/Navbar';
 import Dummynav from './components/Dummynav';
 import Carousel from './components/Carousel';
 import { Provider } from 'react-redux';
-import './App.css';
+
 import Store from './Redux/Store';
 import Banner from './components/Banner';
+import Todoapp from './components/Todoapp';
+
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -17,13 +20,14 @@ function App() {
     
     <Provider store={Store}>
      
-    <Navbar />
-      <Carousel/> 
-       <Weatherapp/>
-       <Banner/>
+    {/* <Navbar />
+      <Carousel/>  */}
+       {/* <Weatherapp/> */}
+       {/* <Banner/>*/}
+       <Todoapp/> 
  
    </Provider>
-   </div>
+  </div>
   );
 }
 
