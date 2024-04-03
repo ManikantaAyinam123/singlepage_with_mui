@@ -1,6 +1,6 @@
 import { combineReducers } from "redux";
-import ReducerTodo from "./ReducerTodo";
-import ReducerWeather from "./ReducerWeather";
+import ReducerTodo from "./reducerTodo";
+import ReducerWeather from "./reducerWeather";
 
 
 

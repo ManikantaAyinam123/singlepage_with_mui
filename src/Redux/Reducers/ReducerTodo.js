@@ -1,22 +1,18 @@
 import React from 'react';
 
 const initialState = {
-    data2: [],
+    data: [],
 };
 
 const ReducerTodo = (state = initialState, action) => {
-    console.log("reducer data",action.payload);
+    console.log("reducer data todo",action.payload);
     switch (action.type) {
         case 'SET_DATA':
             return {
                 ...state,
-                data2: action.payload,
+                data: action.payload,
             };
-            case 'SELECT_ID' :
-                return {
-                    ...state,
-                    selectTodoId : action.payload,
-                }     
+               
             
         default:
             return state;

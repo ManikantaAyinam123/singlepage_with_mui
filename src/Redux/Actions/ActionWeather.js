@@ -1,7 +1,7 @@
-export const setData = (data) => {
-    console.log('This is from Action ',data)
+export const setWeatherData = (data) => {
+    console.log('This is from Action weather ',data)
     return{
-        type: "SET_DATA",
+        type: "SET_WeatherDATA",
         payload: data,
     };
 };

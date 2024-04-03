@@ -40,7 +40,7 @@ const Footer = () => {
 
 
 
-        <Grid container alignItems="center" spacing={2} sx={{ backgroundColor: '#000', p:2 }}>
+        <Grid container alignItems="center" spacing={2} sx={{ backgroundColor: '#000', p:2,marginTop:"10px" }}>
             <Grid item container display="flex" justifyContent="center" spacing={2}>
                 <Grid item>
                     <Icon style={{ fontSize: 25 }} icon="skill-icons:instagram" />

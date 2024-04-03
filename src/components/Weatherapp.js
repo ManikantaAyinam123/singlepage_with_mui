@@ -1,11 +1,10 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, Grid, TextField, Typography } from '@mui/material';
-import { GetData } from "../Redux/Apis/Api";
+import { GetData } from "../Redux/apis/api";
 import { connect } from "react-redux";
-import { setData } from "../Redux/Actions/ActionWeather";
+import { setWeatherData } from "../Redux/actions/actionWeather";
 
-
-const Weatherapp = ({ data, setData }) => {
+const Weatherapp = ({ data, setWeatherData }) => {
     const defaultWeatherIcon = './assets/images/clear.png';
     const weatherIcon = {
         'Clear': './assets/images/clear.png',
@@ -13,34 +12,37 @@ const Weatherapp = ({ data, setData }) => {
     };
 
     const [city, setCity] = useState("");
-    const [error, setError] = useState("");
+
 
     const handleClick = async () => {
         try {
+            if (!city) {
+                alert("please enter city name")
+                return;
+            }
             const weatherDataFromApi = await GetData(city);
-
-            console.log('this is function variable data---->', weatherDataFromApi)
-            setData(weatherDataFromApi);
-
+            setWeatherData(weatherDataFromApi);
 
         } catch (error) {
-            console.log('error occured ---->', error);
+
+            console.log('error occurred:', error);
+
         }
     }
-   
+
     return (
-        <Box sx={{ backgroundColor: '#333', p: 4 }}>
+        <Box sx={{ marginTop: "15px", marginBottom: "15px" }}>
             <Box boxShadow={5} p={4} maxWidth={400} margin="auto" bgcolor="#f0f0f0" borderRadius={2}>
                 <Grid container direction="column" justifyContent="center" alignItems="center" spacing={3}>
                     <Grid item>
                         <Typography variant="h4" color="primary">Weather App</Typography>
                     </Grid>
-                    <Grid item display="flex" alignItems={"center"} >
+                    <Grid item display="flex" alignItems={"center"}>
                         <Grid xs={8} marginRight="10px">
                             <TextField
                                 placeholder='Enter City Name'
                                 value={city}
-                                onChange={(e) => { setCity(e.target.value); setError("") }}
+                                onChange={(e) => { setCity(e.target.value); }}
                                 variant="outlined"
                                 fullWidth
                             />
@@ -49,12 +51,8 @@ const Weatherapp = ({ data, setData }) => {
                             <Button variant='contained' color="primary" onClick={handleClick} fullWidth>Search</Button>
                         </Grid>
                     </Grid>
-                    {error && (
-                        <Grid item>
-                            <Typography variant="body1" color="error">{error}</Typography>
-                        </Grid>
-                    )}
-                    {data === null || data === undefined && (
+
+                    {!data || (data && Object.keys(data).length === 0) ? (
                         <Grid container direction="column" alignItems="center">
                             <Grid item>
                                 <img src={defaultWeatherIcon} alt="weather-icon" style={{ width: 150, height: 150 }} />
@@ -66,11 +64,7 @@ const Weatherapp = ({ data, setData }) => {
                                 <Typography>Humidity: --%</Typography>
                             </Grid>
                         </Grid>
-                    )}
-
-
-                    {console.log("gvdgv", data)}
-                    {data && data.weather && data.weather[0] && (
+                    ) : (
                         <Grid container direction="column" alignItems="center">
                             <Grid item>
                                 <img src={weatherIcon[data.weather[0].main] || defaultWeatherIcon} alt="weather-icon" style={{ width: 150, height: 150 }} />
@@ -90,16 +84,13 @@ const Weatherapp = ({ data, setData }) => {
 };
 
 const mapStateToProps = state => {
-    console.log("this is from mapStateTo props", state.data)
     return {
-        data: state.data,
-
+        data: state.ReducerWeather.data2,
     }
 }
 
 const mapDispatchToProps = {
-
-    setData,
+    setWeatherData,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Weatherapp);

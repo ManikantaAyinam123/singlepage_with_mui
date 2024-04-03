@@ -15,6 +15,7 @@ export const GetData = async (city) => {
             return jsonData; 
         }
     } catch (error) {
+       alert("Enter valid city name")
         console.error(' Api Error', error );
         
     }   
@@ -59,3 +60,15 @@ export const deleteTodo = async (id) => {
         console.log('error occured')
       }
  }
+  export const updateTodo =async(id,formdata) =>{
+    const databaseUrl = "https://todo-1e7da-default-rtdb.asia-southeast1.firebasedatabase.app";
+    try{
+        await axios.put(`${databaseUrl}/todos/${id}.json`, formdata);
+        console.log("form data in put",id);
+        alert("data updated sucessfully")
+    }
+    catch(error){
+        alert("error updating data",error)
+    }
+
+  }

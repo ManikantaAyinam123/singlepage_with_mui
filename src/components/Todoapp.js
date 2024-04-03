@@ -1,98 +1,117 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { setData, select_Id } from '../Redux/Actions/ActionTodo';
-import { getTodo, newTodo, deleteTodo } from '../Redux/Apis/Api';
-import { useEffect, useState } from 'react';
-import { Grid, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, TextField } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
+import { setData } from '../Redux/actions/actionTodo';
+import { getTodo, newTodo, deleteTodo, updateTodo } from '../Redux/apis/api';
+import { Grid, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, TextField, Stack } from '@mui/material';
 
 const Todoapp = ({ data, setData }) => {
   useEffect(() => {
-    alltodosdata(); // Fetch data on component mount
+    alltodosdata();
   }, []);
 
   const [formData, setFormData] = useState({ todoContent: '' });
-
-  console.log("this is all todos data", data);
+  const [isUpdate, setIsUpdate] = useState(false);
 
   const alltodosdata = async () => {
     const todos = await getTodo();
     setData(todos);
   };
+
   const handleInputChange = (event, field) => {
     setFormData({ ...formData, [field]: event.target.value });
   }
+
   const handleAdd = async (e) => {
     e.preventDefault();
 
     try {
-      if (formData.todoContent !== '') {
+      if (formData.todoContent.trim() !== '') {
         await newTodo(formData);
-        console.log("this is form data----------->", formData)
         alltodosdata();
-
-        setFormData({
-          todoContent: ''
-        });
-
+        setFormData({ todoContent: '' });
       } else {
         alert("Please fill all details");
       }
     } catch (error) {
-      console.error('Error adding student:', error);
+      console.error('Error adding Todo:', error);
     }
   }
+
   const handleDelete = async (id) => {
     try {
       await deleteTodo(id)
-      alert("Student is successfully Deleted....!")
+      alert("Todo is successfully Deleted....!")
       alltodosdata();
     } catch (error) {
-      console.log("Student Successfully Deleted")
+      console.log("Todo Successfully Deleted")
     }
   }
+
   const handleEdit = (todo) => {
-    console.log("edit data",todo.todoContent);
-   setFormData({todoContent:todo.todoContent });
-   
+    setFormData({ id: todo.id, todoContent: todo.todoContent });
+    setIsUpdate(true);
   };
 
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      if (formData.todoContent.trim() !== '') {
+        setIsUpdate(false);
+        await updateTodo(formData.id, formData);
+        alltodosdata();
+        setFormData({ id: '', todoContent: '' });
+      }
+      else {
+        alert("Please fill details");
+      }
+    }
+    catch (error) {
+      console.error('Error updating Todo:', error);
+    }
+  }
+
   return (
-    <Grid container spacing={2} padding="20px" justifyContent="center" >
-      <Grid item   >
-        <TextField id="outlined-basic" label="Outlined" variant="outlined"  value={formData.todoContent} onChange={(e) => handleInputChange(e, 'todoContent')} />
-        <Button variant="contained" onClick={handleAdd}>Add</Button>
-      </Grid>
-      <Grid item xs={12} >
-        <TableContainer component={Paper} boxShadow={3}>
-          <Table style={{ border: '1px solid transparent' }}>
+    <Grid container spacing={2} justifyContent="center" padding="10px" >
+      <Grid item xs={12} sm={8}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <TextField
+            id="outlined-basic"
+            label="Add Todo"
+            variant="outlined"
+
+            value={formData.todoContent}
+            onChange={(e) => handleInputChange(e, 'todoContent')}
+            sx={{ width: '80%', height: "40px", }}
+          />
+          <Button
+            variant="contained"
+            onClick={isUpdate ? handleUpdate : handleAdd}
+
+            sx={{ marginLeft: '10px', width: '20%', height: "40px", marginTop: '8px', fontWeight: 'bolder', boxShadow: '5' }}
+          >
+            {isUpdate ? 'Update' : 'Add'}
+          </Button>
+        </div>
+        <TableContainer sx={{ marginTop: '20px', boxShadow: '5' }} >
+          <Table  >
             <TableHead>
               <TableRow>
-                <TableCell><Typography variant='h5'> Content</Typography></TableCell>
-                <TableCell><Typography variant='h5'> Edit</Typography></TableCell>
-                <TableCell><Typography variant='h5' > Delete</Typography></TableCell>
+                <TableCell><Typography variant='h6'>Content</Typography></TableCell>
+                <TableCell align="center"><Typography variant='h6'>Actions</Typography></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {data.map((todo) => (
                 <TableRow key={todo.id}>
                   <TableCell>{todo.todoContent}</TableCell>
-                  <TableCell>
-                    <Button variant='contained' onClick={() => handleEdit(todo)} >
-                      Edit
-                    </Button>
-                  </TableCell>
-                  <TableCell>
-                    <Button variant='contained' onClick={() => handleDelete(todo.id)} >
-                      Delete
-                    </Button>
+                  <TableCell align='center'>
+                    <Stack direction="row" spacing={2} justifyContent={'center'}>
+                      <Button variant='contained' sx={{ backgroundColor: '#6F4E37' }} onClick={() => handleEdit(todo)}>Edit</Button>
+                      <Button variant='contained' sx={{ backgroundColor: '#FF0000' }} onClick={() => handleDelete(todo.id)}>Delete</Button>
+                    </Stack>
                   </TableCell>
                 </TableRow>
-
               ))}
-
-
             </TableBody>
           </Table>
         </TableContainer>
@@ -102,15 +121,14 @@ const Todoapp = ({ data, setData }) => {
 };
 
 const mapStateToProps = state => {
+  console.log("this is from mapStateTo props in todo", state.ReducerTodo.data)
   return {
-    data: state.ReducerWeather.data,
-    selectTodoId: state.selectTodoId,
+    data: state.ReducerTodo.data,
   };
 };
 
 const mapDispatchToProps = {
   setData,
-  select_Id,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Todoapp);
